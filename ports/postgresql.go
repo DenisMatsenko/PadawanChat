@@ -34,7 +34,9 @@ func (ds *DbStorage) DeleteFromDb(messageId int) (bool, error) {
 
 	// ? Shold it be here, or its usecase part?
 	rowsCount, err := queryResult.RowsAffected()
-	if err != nil || rowsCount != 1 {
+	const ONE_DELETED_ROW = 1
+	
+	if err != nil || rowsCount != ONE_DELETED_ROW {
 		return false, err
 	} else {
 		return true, nil
