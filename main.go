@@ -19,8 +19,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("%v", db)
-
 	dbStorage := ports.NewDbStorage(db)
 	usecase := usecases.NewMessageUsecase(dbStorage)
 	handler := handlers.NewHadler(usecase)

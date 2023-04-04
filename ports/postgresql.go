@@ -24,15 +24,21 @@ func (ds *DbStorage) InsertToDb(message domain.Message) error {
 	return nil
 }
 
-func (ds *DbStorage) DeleteFromDb(messageId int) error {
+func (ds *DbStorage) DeleteFromDb(messageId int) (bool, error) {
 	script := fmt.Sprintf(`DELETE FROM "Messages" WHERE "id" = %d`, messageId)
 
-	_, err := ds.database.Exec(script)
+	queryResult, err := ds.database.Exec(script)
 	if err != nil {
-		return err
+		return false, err
 	}
 
-	return nil
+	// ? Shold it be here, or its usecase part?
+	rowsCount, err := queryResult.RowsAffected()
+	if err != nil || rowsCount != 1 {
+		return false, err
+	} else {
+		return true, nil
+	}
 }
 
 func (ds *DbStorage) GetAllFromDb() (*sql.Rows, error) {
@@ -42,6 +48,5 @@ func (ds *DbStorage) GetAllFromDb() (*sql.Rows, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return rows, nil
 }
