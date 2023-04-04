@@ -5,8 +5,10 @@ import (
 	"Chat/usecases"
 	"encoding/json"
 	"fmt"
+
+	// "fmt"
 	"net/http"
-	"os"
+	// "os"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -20,43 +22,56 @@ func NewHadler(usecase *usecases.MessageUsecase) Handler {
 	return Handler{usecase: usecase}
 }
 
-func (h Handler) MessageCreate(w http.ResponseWriter, r *http.Request) {
+// ! status ok after error ?
+func (h Handler) MessageCreate(rw http.ResponseWriter, r *http.Request) {
 	var message domain.Message
 	err := json.NewDecoder(r.Body).Decode(&message) 
-	errorCheck(err)
+	if err != nil {
+		sendError(rw, err)
+		return
+	}
 
 	err = h.usecase.InsertToDb(message)
-	errorCheck(err)
+	if err != nil {
+		sendError(rw, err)
+		return
+	}
 
-	w.WriteHeader(http.StatusCreated) // # Status
+	rw.WriteHeader(http.StatusCreated) // # Status
 }
 
 func (h Handler) MessageDelete(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	deleteMessageId, err := strconv.Atoi(vars["id"])
-	errorCheck(err)
+	if err != nil {
+		sendError(rw, err)
+		return
+	}
 
 	err = h.usecase.DeleteFromDb(deleteMessageId)
-	errorCheck(err)
-
+	if err != nil {
+		sendError(rw, err)
+		return
+	}
 
 	rw.WriteHeader(http.StatusNotFound) // # Status
 }
 
 func (h Handler) MessageGetAll(rw http.ResponseWriter, r *http.Request) {
 	messages, err := h.usecase.GetAllFromDb()
-	errorCheck(err)
+	if err != nil {
+		sendError(rw, err)
+		return
+	}
 
 	rw.Header().Set("Content-Type", "application/json") // # Header
-	json.NewEncoder(rw).Encode(messages) // # Body // ? Should it be here, or its usecase part?
-
+	json.NewEncoder(rw).Encode(messages) // # Body
 	rw.WriteHeader(http.StatusOK) // # Status
-	fmt.Println("Get all messages")
 }
 
-func errorCheck(err error) {
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		os.Exit(1)
-	}
+func sendError(rw http.ResponseWriter, err error) {
+	fmt.Println(err)
+	rw.Header().Set("Content-Type", "application/json") // # Header
+	rw.Write([]byte(err.Error()))
+	rw.WriteHeader(http.StatusNotFound) // # Status
 }
