@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 )
+//go:generate go run github.com/go-jet/jet/v2/cmd/jet -dsn=postgres://postgres:Dm2016dM@localhost:5432/PadawanChat?sslmode=disable -path=./internal/ports/database/gen
 
 func main() {
 	db, err := sql.Open("postgres", "host=localhost port=5432 user=postgres password=Dm2016dM dbname=PadawanChat sslmode=disable")
