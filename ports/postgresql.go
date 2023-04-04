@@ -4,7 +4,6 @@ import (
 	"Chat/domain"
 	"Chat/internal/ports/database/gen/PadawanChat/public/table"
 	"database/sql"
-	// "errors"
 	"fmt"
 )
 
@@ -34,12 +33,12 @@ func (ds *DbStorage) DeleteFromDb(messageId int) error {
 		return err
 	}
 
-	// ? Shold it be here, or its usecase part?
 	rowsCount, err := queryResult.RowsAffected()
-	const ONE_DELETED_ROW = 1
 	
-	if err != nil || rowsCount != ONE_DELETED_ROW {
+	if err != nil {
 		return err
+	} else if rowsCount != 1 {
+		return fmt.Errorf("no message with id: %d", messageId)
 	}
 
 	return nil
