@@ -2,7 +2,9 @@ package ports
 
 import (
 	"Chat/domain"
+	"Chat/internal/ports/database/gen/PadawanChat/public/table"
 	"database/sql"
+	// "errors"
 	"fmt"
 )
 
@@ -24,12 +26,12 @@ func (ds *DbStorage) InsertToDb(message domain.Message) error {
 	return nil
 }
 
-func (ds *DbStorage) DeleteFromDb(messageId int) (bool, error) {
+func (ds *DbStorage) DeleteFromDb(messageId int) error {
 	script := fmt.Sprintf(`DELETE FROM "Messages" WHERE "id" = %d`, messageId)
 
 	queryResult, err := ds.database.Exec(script)
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	// ? Shold it be here, or its usecase part?
@@ -37,16 +39,21 @@ func (ds *DbStorage) DeleteFromDb(messageId int) (bool, error) {
 	const ONE_DELETED_ROW = 1
 	
 	if err != nil || rowsCount != ONE_DELETED_ROW {
-		return false, err
-	} else {
-		return true, nil
+		return err
 	}
+
+	return nil
 }
 
 func (ds *DbStorage) GetAllFromDb() (*sql.Rows, error) {
-	script := `SELECT * FROM "Messages"`
+	stmt := table.Messages.SELECT(table.Messages.AllColumns)
+	query, args := stmt.Sql()
 
-	rows, err := ds.database.Query(script)
+	fmt.Println(args...)
+	fmt.Println(query)
+	// `SELECT * FROM "Messages"`
+
+	rows, err := ds.database.Query(query)
 	if err != nil {
 		return nil, err
 	}

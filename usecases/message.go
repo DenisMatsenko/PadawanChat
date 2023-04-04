@@ -21,12 +21,12 @@ func (msgu MessageUsecase) InsertToDb(message domain.Message) error {
 	return nil
 }
 
-func (msgu MessageUsecase) DeleteFromDb(messageId int) (bool, error) {
-	successful, err := msgu.dbStorage.DeleteFromDb(messageId)
+func (msgu MessageUsecase) DeleteFromDb(messageId int) error {
+	err := msgu.dbStorage.DeleteFromDb(messageId)
 	if err != nil {
-		return successful, err
+		return err
 	}
-	return successful, nil
+	return nil
 }
 
 func (msgu MessageUsecase) GetAllFromDb() ([]domain.Message, error) {

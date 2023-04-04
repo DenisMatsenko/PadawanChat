@@ -21,7 +21,6 @@ func NewHadler(usecase *usecases.MessageUsecase) Handler {
 }
 
 func (h Handler) MessageCreate(w http.ResponseWriter, r *http.Request) {
-	// ? Should it be here, or its usecase part?
 	var message domain.Message
 	err := json.NewDecoder(r.Body).Decode(&message) 
 	errorCheck(err)
@@ -33,20 +32,15 @@ func (h Handler) MessageCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) MessageDelete(rw http.ResponseWriter, r *http.Request) {
-
-	// ? Should it be here, or its usecase part?
 	vars := mux.Vars(r)
 	deleteMessageId, err := strconv.Atoi(vars["id"])
 	errorCheck(err)
 
-	successful, err := h.usecase.DeleteFromDb(deleteMessageId)
+	err = h.usecase.DeleteFromDb(deleteMessageId)
 	errorCheck(err)
 
-	if successful {
-		rw.WriteHeader(http.StatusOK) // # Status
-	} else {
-		rw.WriteHeader(http.StatusNotFound) // # Status
-	}
+
+	rw.WriteHeader(http.StatusNotFound) // # Status
 }
 
 func (h Handler) MessageGetAll(rw http.ResponseWriter, r *http.Request) {
