@@ -19,9 +19,18 @@ func NewDbStorage(dbConnect *sql.DB) *DbStorage {
 }
 
 func (ds *DbStorage) InsertToDb(message domain.Message) error {
-	script := fmt.Sprintf(`INSERT INTO "Messages" ("content", "author") VALUES ('%s', '%s')`, message.Content, message.Author)
+	// * Create query
+	stmt := table.Messages.
+		INSERT(
+			table.Messages.Content, 
+			table.Messages.Author).
+		VALUES(
+			postgres.String(message.Content), 
+			postgres.String(message.Author))
 
-	_, err := ds.database.Exec(script)
+
+	// * Execute query
+	_, err := stmt.Exec(ds.database)
 	if err != nil {
 		return err
 	}
@@ -29,15 +38,17 @@ func (ds *DbStorage) InsertToDb(message domain.Message) error {
 }
 
 func (ds *DbStorage) DeleteFromDb(messageId int) error {
+	// * Create query
 	stmt := table.Messages.DELETE().WHERE(table.Messages.ID.EQ(postgres.Int(int64(messageId))))
 
+	// * Execute query
 	queryResult, err := stmt.Exec(ds.database)
 	if err != nil {
 		return err
 	}
 
+	// * Check if row was deleted
 	rowsCount, err := queryResult.RowsAffected()
-	
 	if err != nil {
 		return err
 	} else if rowsCount != 1 {
