@@ -5,9 +5,10 @@ import (
 	"Chat/usecases"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 type Handler struct {
@@ -68,6 +69,7 @@ func (h Handler) MessageGetAll(rw http.ResponseWriter, r *http.Request) {
 func sendError(rw http.ResponseWriter, err error) {
 	fmt.Println(err)
 	rw.Header().Set("Content-Type", "application/json") // # Header
+	rw.WriteHeader(500)                                 // # Status
 	rw.Write([]byte(err.Error()))
-	rw.WriteHeader(http.StatusNotFound) // # Status
+	fmt.Println("heee")
 }
