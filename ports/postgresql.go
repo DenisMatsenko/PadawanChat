@@ -2,11 +2,10 @@ package ports
 
 import (
 	"Chat/domain"
-	"Chat/internal/ports/database/gen/PadawanChat/public/table"
 	"Chat/internal/ports/database/gen/PadawanChat/public/model"
+	"Chat/internal/ports/database/gen/PadawanChat/public/table"
 	"database/sql"
 	"fmt"
-
 	"github.com/go-jet/jet/v2/postgres"
 )
 
@@ -22,12 +21,11 @@ func (ds *DbStorage) InsertToDb(message domain.Message) error {
 	// * Create query
 	stmt := table.Messages.
 		INSERT(
-			table.Messages.Content, 
+			table.Messages.Content,
 			table.Messages.Author).
 		VALUES(
-			postgres.String(message.Content), 
+			postgres.String(message.Content),
 			postgres.String(message.Author))
-
 
 	// * Execute query
 	_, err := stmt.Exec(ds.database)
@@ -61,11 +59,11 @@ func (ds *DbStorage) DeleteFromDb(messageId int) error {
 func (ds *DbStorage) GetAllFromDb() ([]domain.Message, error) {
 	// * Create query
 	stmt := table.Messages.SELECT(table.Messages.AllColumns)
-	
+
 	// * Execute query
 	messagesModel := []model.Messages{}
 	err := stmt.Query(ds.database, &messagesModel)
-	if err != nil { 
+	if err != nil {
 		return nil, err
 	}
 
@@ -78,10 +76,10 @@ func (ds *DbStorage) GetAllFromDb() ([]domain.Message, error) {
 	return messagesDomain, nil
 }
 
-func mapModelToDomainMessage(message model.Messages) domain.Message{
+func mapModelToDomainMessage(message model.Messages) domain.Message {
 	return domain.Message{
-		Id:  message.ID,
+		Id:      message.ID,
 		Content: *message.Content,
-		Author: *message.Author,
+		Author:  *message.Author,
 	}
 }

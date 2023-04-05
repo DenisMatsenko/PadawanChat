@@ -34,6 +34,5 @@ func (msgu MessageUsecase) GetAllFromDb() ([]domain.Message, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return messages, nil
 }

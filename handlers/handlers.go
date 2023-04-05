@@ -5,13 +5,9 @@ import (
 	"Chat/usecases"
 	"encoding/json"
 	"fmt"
-
-	// "fmt"
-	"net/http"
-	// "os"
-	"strconv"
-
 	"github.com/gorilla/mux"
+	"net/http"
+	"strconv"
 )
 
 type Handler struct {
@@ -25,7 +21,7 @@ func NewHadler(usecase *usecases.MessageUsecase) Handler {
 // ! status ok after error ?
 func (h Handler) MessageCreate(rw http.ResponseWriter, r *http.Request) {
 	var message domain.Message
-	err := json.NewDecoder(r.Body).Decode(&message) 
+	err := json.NewDecoder(r.Body).Decode(&message)
 	if err != nil {
 		sendError(rw, err)
 		return
@@ -65,8 +61,8 @@ func (h Handler) MessageGetAll(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	rw.Header().Set("Content-Type", "application/json") // # Header
-	json.NewEncoder(rw).Encode(messages) // # Body
-	rw.WriteHeader(http.StatusOK) // # Status
+	json.NewEncoder(rw).Encode(messages)                // # Body
+	rw.WriteHeader(http.StatusOK)                       // # Status
 }
 
 func sendError(rw http.ResponseWriter, err error) {
