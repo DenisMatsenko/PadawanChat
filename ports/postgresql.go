@@ -3,8 +3,11 @@ package ports
 import (
 	"Chat/domain"
 	"Chat/internal/ports/database/gen/PadawanChat/public/table"
+	"Chat/internal/ports/database/gen/PadawanChat/public/model"
 	"database/sql"
 	"fmt"
+
+	"github.com/go-jet/jet/v2/postgres"
 )
 
 type DbStorage struct {
@@ -26,9 +29,9 @@ func (ds *DbStorage) InsertToDb(message domain.Message) error {
 }
 
 func (ds *DbStorage) DeleteFromDb(messageId int) error {
-	script := fmt.Sprintf(`DELETE FROM "Messages" WHERE "id" = %d`, messageId)
+	stmt := table.Messages.DELETE().WHERE(table.Messages.ID.EQ(postgres.Int(int64(messageId))))
 
-	queryResult, err := ds.database.Exec(script)
+	queryResult, err := stmt.Exec(ds.database)
 	if err != nil {
 		return err
 	}
@@ -44,17 +47,30 @@ func (ds *DbStorage) DeleteFromDb(messageId int) error {
 	return nil
 }
 
-func (ds *DbStorage) GetAllFromDb() (*sql.Rows, error) {
+func (ds *DbStorage) GetAllFromDb() ([]domain.Message, error) {
+	// * Create query
 	stmt := table.Messages.SELECT(table.Messages.AllColumns)
-	query, args := stmt.Sql()
-
-	fmt.Println(args...)
-	fmt.Println(query)
-	// `SELECT * FROM "Messages"`
-
-	rows, err := ds.database.Query(query)
-	if err != nil {
+	
+	// * Execute query
+	messagesModel := []model.Messages{}
+	err := stmt.Query(ds.database, &messagesModel)
+	if err != nil { 
 		return nil, err
 	}
-	return rows, nil
+
+	// * Map model messages arr to domain messages arr
+	var messagesDomain []domain.Message = make([]domain.Message, len(messagesModel))
+	for _, messageModel := range messagesModel {
+		messagesDomain = append(messagesDomain, mapModelToDomainMessage(messageModel))
+	}
+
+	return messagesDomain, nil
+}
+
+func mapModelToDomainMessage(message model.Messages) domain.Message{
+	return domain.Message{
+		Id:  message.ID,
+		Content: *message.Content,
+		Author: *message.Author,
+	}
 }

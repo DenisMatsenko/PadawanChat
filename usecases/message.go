@@ -30,20 +30,9 @@ func (msgu MessageUsecase) DeleteFromDb(messageId int) error {
 }
 
 func (msgu MessageUsecase) GetAllFromDb() ([]domain.Message, error) {
-	rows, err := msgu.dbStorage.GetAllFromDb()
+	messages, err := msgu.dbStorage.GetAllFromDb()
 	if err != nil {
 		return nil, err
-	}
-
-	var messages []domain.Message
-
-	for rows.Next() {
-		var message domain.Message
-		err = rows.Scan(&message.Id, &message.Content, &message.Author)
-		if err != nil {
-			return nil, err
-		}
-		messages = append(messages, message)
 	}
 
 	return messages, nil
