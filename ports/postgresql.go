@@ -59,7 +59,7 @@ func (ds *DbStorage) GetAllFromDb() ([]domain.Message, error) {
 	}
 
 	// * Map model messages arr to domain messages arr
-	var messagesDomain []domain.Message = make([]domain.Message, len(messagesModel))
+	var messagesDomain []domain.Message = []domain.Message{}
 	for _, messageModel := range messagesModel {
 		messagesDomain = append(messagesDomain, mapModelToDomainMessage(messageModel))
 	}
