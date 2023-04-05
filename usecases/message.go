@@ -13,24 +13,24 @@ func NewMessageUsecase(pdb *ports.DbStorage) *MessageUsecase {
 	return &MessageUsecase{dbStorage: pdb}
 }
 
-func (msgu MessageUsecase) InsertToDb(message domain.Message) error {
-	err := msgu.dbStorage.InsertToDb(message)
+func (msgu MessageUsecase) Insert(message domain.Message) error {
+	err := msgu.dbStorage.Insert(message)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (msgu MessageUsecase) DeleteFromDb(messageId int) error {
-	err := msgu.dbStorage.DeleteFromDb(messageId)
+func (msgu MessageUsecase) Delete(messageId int) error {
+	err := msgu.dbStorage.Delete(messageId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (msgu MessageUsecase) GetAllFromDb() ([]domain.Message, error) {
-	messages, err := msgu.dbStorage.GetAllFromDb()
+func (msgu MessageUsecase) GetAll() ([]domain.Message, error) {
+	messages, err := msgu.dbStorage.GetAll()
 	if err != nil {
 		return nil, err
 	}

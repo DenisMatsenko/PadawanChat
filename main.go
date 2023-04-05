@@ -23,7 +23,7 @@ func main() {
 
 	dbStorage := ports.NewDbStorage(db)
 	usecase := usecases.NewMessageUsecase(dbStorage)
-	handler := handlers.NewHadler(usecase)
+	handler := handlers.NewMessageHadler(usecase)
 
 	mux := mux.NewRouter()
 	mux.HandleFunc("/message/create", handler.MessageCreate).Methods("POST")
