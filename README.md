@@ -1,2 +1,0 @@
-# PadawanChat
- Http server chat
