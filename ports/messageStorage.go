@@ -21,10 +21,10 @@ func (ms *MessageStorage) Insert(message domain.Message) error {
 	stmt := table.Messages.
 		INSERT(
 			table.Messages.Content,
-			table.Messages.Author).
+			table.Messages.AuthorId).
 		VALUES(
 			postgres.String(message.Content),
-			postgres.String(message.Author))
+			postgres.String(message.AuthorId))
 
 	// * Execute query
 	_, err := stmt.Exec(ms.database)
@@ -79,6 +79,6 @@ func mapModelToDomainMessage(message model.Messages) domain.Message {
 	return domain.Message{
 		Id:      message.ID,
 		Content: *message.Content,
-		Author:  *message.Author,
+		AuthorId:  *message.AuthorId,
 	}
 }

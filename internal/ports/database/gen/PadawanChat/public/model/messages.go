@@ -8,7 +8,7 @@
 package model
 
 type Messages struct {
-	ID      int32
-	Author  *string
-	Content *string
+	ID       int32
+	AuthorId *string
+	Content  *string
 }
