@@ -68,14 +68,9 @@ func (h MessageHandler) MessageGetAll(rw http.ResponseWriter, r *http.Request) {
 
 func sendError(rw http.ResponseWriter, err error) {
 	fmt.Println(err)
-	rw.Header().Set("Content-Type", "application/text") 
-	rw.WriteHeader(http.StatusNotFound) 
-
-	// ? Im not sure about what i should send to client, are there point
-	// ? to write error message with content "404" if status already is 404 ?
 	if err == domain.ErrMessageNotFound {
-		rw.Write([]byte(err.Error()))
+		rw.WriteHeader(http.StatusNotFound)
 	} else {
-		rw.Write([]byte("Error 404, status not found"))
+		rw.WriteHeader(http.StatusInternalServerError)
 	}
 }
