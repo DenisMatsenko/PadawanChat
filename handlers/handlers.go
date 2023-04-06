@@ -19,7 +19,6 @@ func NewMessageHadler(messageUsecase *usecases.MessageUsecase) MessageHandler {
 	return MessageHandler{messageUsecase: messageUsecase}
 }
 
-// ! status ok after error ?
 func (h MessageHandler) MessageCreate(rw http.ResponseWriter, r *http.Request) {
 	var message domain.Message
 	err := json.NewDecoder(r.Body).Decode(&message)
