@@ -15,20 +15,24 @@ import (
 
 
 func main() {
-	db, err := sql.Open("postgres", "host=localhost port=5432 user=postgres password=Dm2016dM dbname=PadawanChat sslmode=disable")
+	dbConnection, err := sql.Open("postgres", "host=localhost port=5432 user=postgres password=Dm2016dM dbname=PadawanChat sslmode=disable")
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
 
-	dbStorage := ports.NewDbStorage(db)
-	usecase := usecases.NewMessageUsecase(dbStorage)
-	handler := handlers.NewMessageHadler(usecase)
+	messageStorage := ports.NewMessageStorage(dbConnection)
+	messageUsecase := usecases.NewMessageUsecase(messageStorage)
+	messageHandler := handlers.NewMessageHadler(messageUsecase)
+
+	authorStorage := ports.NewAuthorStorage(dbConnection)
+	authorUsecase := usecases.NewAuthorUsecase(authorStorage)
+	authorHandler := handlers.NewAuthorHandler(authorUsecase)
 
 	mux := mux.NewRouter()
-	mux.HandleFunc("/message/create", handler.MessageCreate).Methods("POST")
-	mux.HandleFunc("/message/delete/{id}", handler.MessageDelete).Methods("DELETE")
-	mux.HandleFunc("/message/get/all", handler.MessageGetAll).Methods("GET")
+	mux.HandleFunc("/message/create", messageHandler.MessageCreate).Methods("POST")
+	mux.HandleFunc("/message/delete/{id}", messageHandler.MessageDelete).Methods("DELETE")
+	mux.HandleFunc("/message/get/all", messageHandler.MessageGetAll).Methods("GET")
 
 	fmt.Println("Server running on port 8080")
 	http.ListenAndServe("0.0.0.0:8080", mux)

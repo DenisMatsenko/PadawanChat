@@ -8,15 +8,15 @@ import (
 	"github.com/go-jet/jet/v2/postgres"
 )
 
-type DbStorage struct {
+type MessageStorage struct {
 	database *sql.DB
 }
 
-func NewDbStorage(dbConnect *sql.DB) *DbStorage {
-	return &DbStorage{database: dbConnect}
+func NewMessageStorage(dbConnect *sql.DB) *MessageStorage {
+	return &MessageStorage{database: dbConnect}
 }
 
-func (ds *DbStorage) Insert(message domain.Message) error {
+func (ds *MessageStorage) Insert(message domain.Message) error {
 	// * Create query
 	stmt := table.Messages.
 		INSERT(
@@ -34,7 +34,7 @@ func (ds *DbStorage) Insert(message domain.Message) error {
 	return nil
 }
 
-func (ds *DbStorage) Delete(messageId int) error {
+func (ds *MessageStorage) Delete(messageId int) error {
 	// * Create query
 	stmt := table.Messages.DELETE().WHERE(table.Messages.ID.EQ(postgres.Int(int64(messageId))))
 
@@ -55,7 +55,7 @@ func (ds *DbStorage) Delete(messageId int) error {
 	return nil
 }
 
-func (ds *DbStorage) GetAll() ([]domain.Message, error) {
+func (ds *MessageStorage) GetAll() ([]domain.Message, error) {
 	// * Create query
 	stmt := table.Messages.SELECT(table.Messages.AllColumns)
 
