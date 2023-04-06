@@ -24,7 +24,7 @@ func (ms *MessageStorage) Insert(message domain.Message) error {
 			table.Messages.AuthorId).
 		VALUES(
 			postgres.String(message.Content),
-			postgres.String(message.AuthorId))
+			postgres.Int32(message.AuthorId))
 
 	// * Execute query
 	_, err := stmt.Exec(ms.database)

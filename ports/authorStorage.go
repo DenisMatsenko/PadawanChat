@@ -38,3 +38,21 @@ func (as *AuthorStorage) Insert(author domain.Author) error {
 	}
 	return nil
 }
+
+func (as *AuthorStorage) Exist(authorId int32) error {
+	stmt := table.Authors.SELECT(table.Authors.ID).WHERE(table.Authors.ID.EQ(postgres.Int(int64(authorId))))
+
+	queryResult, err := stmt.Exec(as.database)
+	if err != nil {
+		return err
+	}
+
+	rowsCount, err := queryResult.RowsAffected()
+	if err != nil {
+		return err
+	} else if rowsCount != 1 {
+		return domain.ErrAuthorNotFound
+	}
+
+	return nil
+}

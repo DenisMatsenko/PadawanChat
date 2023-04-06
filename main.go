@@ -22,11 +22,10 @@ func main() {
 	}
 
 	messageStorage := ports.NewMessageStorage(dbConnection)
-	messageUsecase := usecases.NewMessageUsecase(messageStorage)
-	messageHandler := handlers.NewMessageHadler(messageUsecase)
-
 	authorStorage := ports.NewAuthorStorage(dbConnection)
-	authorUsecase := usecases.NewAuthorUsecase(authorStorage)
+	messageUsecase := usecases.NewMessageUsecase(messageStorage, authorStorage)
+	authorUsecase := usecases.NewAuthorUsecase(authorStorage, messageStorage)
+	messageHandler := handlers.NewMessageHadler(messageUsecase)
 	authorHandler := handlers.NewAuthorHandler(authorUsecase)
 
 	mux := mux.NewRouter()

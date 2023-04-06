@@ -7,14 +7,21 @@ import (
 
 type MessageUsecase struct {
 	messageStorage *ports.MessageStorage
+	authorStorage  *ports.AuthorStorage
 }
 
-func NewMessageUsecase(pdb *ports.MessageStorage) *MessageUsecase {
-	return &MessageUsecase{messageStorage: pdb}
+func NewMessageUsecase(ms *ports.MessageStorage, as *ports.AuthorStorage) *MessageUsecase {
+	return &MessageUsecase{messageStorage: ms, authorStorage: as}
 }
 
 func (msgu MessageUsecase) Insert(message domain.Message) error {
-	err := msgu.messageStorage.Insert(message)
+
+	err := msgu.authorStorage.Exist(message.AuthorId)
+	if err != nil {
+		return err
+	}
+
+	err = msgu.messageStorage.Insert(message)
 	if err != nil {
 		return err
 	}

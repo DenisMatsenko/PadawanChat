@@ -7,10 +7,11 @@ import (
 
 type AuthorUsecase struct {
 	authorStorage *ports.AuthorStorage
+	messageStorage *ports.MessageStorage
 }
 
-func NewAuthorUsecase(pdb *ports.AuthorStorage) *AuthorUsecase {
-	return &AuthorUsecase{authorStorage: pdb}
+func NewAuthorUsecase(as *ports.AuthorStorage, ms *ports.MessageStorage) *AuthorUsecase {
+	return &AuthorUsecase{authorStorage: as, messageStorage: ms}
 }
 
 func (a AuthorUsecase) Insert(author domain.Author) error {

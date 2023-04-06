@@ -66,7 +66,7 @@ func (h MessageHandler) MessageGetAll(rw http.ResponseWriter, r *http.Request) {
 
 func sendError(rw http.ResponseWriter, err error) {
 	fmt.Println(err)
-	if err == domain.ErrMessageNotFound {
+	if err == domain.ErrMessageNotFound || err == domain.ErrAuthorNotFound {
 		rw.WriteHeader(http.StatusNotFound)
 	} else {
 		rw.WriteHeader(http.StatusInternalServerError)
