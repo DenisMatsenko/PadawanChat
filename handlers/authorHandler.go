@@ -5,6 +5,9 @@ import (
 	"Chat/usecases"
 	"encoding/json"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 type AuthorHandler struct {
@@ -36,5 +39,20 @@ func (h AuthorHandler) AuthorDelete(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (h AuthorHandler) AuthorGetAllMessages(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	authorId, err := strconv.ParseInt(vars["id"], 10, 32)
+	if err != nil {
+		sendError(rw, err)
+		return
+	}
 
+	messages, err := h.authorUsecase.GetAllMessages(int32(authorId))
+	if err != nil {
+		sendError(rw, err)
+		return
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	rw.WriteHeader(http.StatusOK)  
+	json.NewEncoder(rw).Encode(messages)  
 }

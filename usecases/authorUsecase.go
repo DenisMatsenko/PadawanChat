@@ -21,3 +21,16 @@ func (a AuthorUsecase) Insert(author domain.Author) error {
 	}
 	return nil
 }
+
+func (a AuthorUsecase) GetAllMessages(authorId int32) ([]domain.Message, error) {
+	err := a.authorStorage.Exist(authorId)
+	if err != nil {
+		return nil, err
+	}
+
+	messages, err := a.messageStorage.GetAllByAuthorId(authorId)
+	if err != nil {
+		return nil, err
+	}
+	return messages, nil
+}
