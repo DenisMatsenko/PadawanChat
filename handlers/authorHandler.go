@@ -38,6 +38,22 @@ func (h AuthorHandler) AuthorDelete(rw http.ResponseWriter, r *http.Request) {
 
 }
 
+func (h AuthorHandler) AuthorUpdate(rw http.ResponseWriter, r *http.Request) {
+	var author domain.Author
+	err := json.NewDecoder(r.Body).Decode(&author)
+	if err != nil {
+		sendError(rw, err)
+		return
+	}
+
+	err = h.authorUsecase.Update(author)
+	if err != nil {
+		sendError(rw, err)
+		return
+	}
+	rw.WriteHeader(http.StatusOK)
+}
+
 func (h AuthorHandler) AuthorGetAllMessages(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	authorId, err := strconv.ParseInt(vars["id"], 10, 32)

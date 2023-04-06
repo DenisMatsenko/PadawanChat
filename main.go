@@ -33,7 +33,8 @@ func main() {
 	mux.HandleFunc("/message/delete/{id}", messageHandler.MessageDelete).Methods("DELETE")
 	mux.HandleFunc("/message/get/all", messageHandler.MessageGetAll).Methods("GET")
 	mux.HandleFunc("/author/create", authorHandler.AuthorCreate).Methods("POST")
-	mux.HandleFunc("/author/delete/{id}", authorHandler.AuthorDelete).Methods("DELETE")
+	mux.HandleFunc("/author/update", authorHandler.AuthorUpdate).Methods("PUT")
+	mux.HandleFunc("/author/{id}/delete", authorHandler.AuthorDelete).Methods("DELETE")
 	mux.HandleFunc("/author/{id}/messages/get/all", authorHandler.AuthorGetAllMessages).Methods("GET")
 
 	fmt.Println("Server running on port 8080")

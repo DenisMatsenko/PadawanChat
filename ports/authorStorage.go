@@ -39,6 +39,19 @@ func (as *AuthorStorage) Insert(author domain.Author) error {
 	return nil
 }
 
+func (as *AuthorStorage) Update(author domain.Author) error {
+	stmt := table.Authors.
+		UPDATE(table.Authors.Username).
+		SET(postgres.String(author.Username)).
+		WHERE(table.Authors.ID.EQ(postgres.Int(int64(author.Id))))
+
+	_, err := stmt.Exec(as.database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (as *AuthorStorage) Exist(authorId int32) error {
 	stmt := table.Authors.SELECT(table.Authors.ID).WHERE(table.Authors.ID.EQ(postgres.Int(int64(authorId))))
 
