@@ -11,16 +11,16 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Handler struct {
-	usecase *usecases.MessageUsecase
+type MessageHandler struct {
+	messageUsecase *usecases.MessageUsecase
 }
 
-func NewHadler(usecase *usecases.MessageUsecase) Handler {
-	return Handler{usecase: usecase}
+func NewMessageHadler(messageUsecase *usecases.MessageUsecase) MessageHandler {
+	return MessageHandler{messageUsecase: messageUsecase}
 }
 
 // ! status ok after error ?
-func (h Handler) MessageCreate(rw http.ResponseWriter, r *http.Request) {
+func (h MessageHandler) MessageCreate(rw http.ResponseWriter, r *http.Request) {
 	var message domain.Message
 	err := json.NewDecoder(r.Body).Decode(&message)
 	if err != nil {
@@ -28,48 +28,49 @@ func (h Handler) MessageCreate(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.usecase.InsertToDb(message)
+	err = h.messageUsecase.Insert(message)
 	if err != nil {
 		sendError(rw, err)
 		return
 	}
 
-	rw.WriteHeader(http.StatusCreated) // # Status
+	rw.WriteHeader(http.StatusCreated)
 }
 
-func (h Handler) MessageDelete(rw http.ResponseWriter, r *http.Request) {
+func (h MessageHandler) MessageDelete(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	deleteMessageId, err := strconv.Atoi(vars["id"])
+	deleteMessageId, err := strconv.ParseInt(vars["id"], 10, 32)
 	if err != nil {
 		sendError(rw, err)
 		return
 	}
 
-	err = h.usecase.DeleteFromDb(deleteMessageId)
+	err = h.messageUsecase.Delete(int(deleteMessageId))
 	if err != nil {
 		sendError(rw, err)
 		return
 	}
 
-	rw.WriteHeader(http.StatusNotFound) // # Status
+	rw.WriteHeader(http.StatusNoContent)
 }
 
-func (h Handler) MessageGetAll(rw http.ResponseWriter, r *http.Request) {
-	messages, err := h.usecase.GetAllFromDb()
+func (h MessageHandler) MessageGetAll(rw http.ResponseWriter, r *http.Request) {
+	messages, err := h.messageUsecase.GetAll()
 	if err != nil {
 		sendError(rw, err)
 		return
 	}
 
-	rw.Header().Set("Content-Type", "application/json") // # Header
-	json.NewEncoder(rw).Encode(messages)                // # Body
-	rw.WriteHeader(http.StatusOK)                       // # Status
+	rw.Header().Set("Content-Type", "application/json")
+	rw.WriteHeader(http.StatusOK)  
+	json.NewEncoder(rw).Encode(messages)                
 }
 
 func sendError(rw http.ResponseWriter, err error) {
 	fmt.Println(err)
-	rw.Header().Set("Content-Type", "application/json") // # Header
-	rw.WriteHeader(500)                                 // # Status
-	rw.Write([]byte(err.Error()))
-	fmt.Println("heee")
+	if err == domain.ErrMessageNotFound {
+		rw.WriteHeader(http.StatusNotFound)
+	} else {
+		rw.WriteHeader(http.StatusInternalServerError)
+	}
 }
