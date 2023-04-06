@@ -14,7 +14,7 @@ func NewAuthorHandler(authorUsecase *usecases.AuthorUsecase) AuthorHandler {
 }
 
 func (h AuthorHandler) AuthorCreate(rw http.ResponseWriter, r *http.Request) {
-
+	
 }
 
 func (h AuthorHandler) AuthorDelete(rw http.ResponseWriter, r *http.Request) {
