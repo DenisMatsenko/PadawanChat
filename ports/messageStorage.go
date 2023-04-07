@@ -88,10 +88,28 @@ func (ms *MessageStorage) GetAllByAuthorId(authorId int32) ([]domain.Message, er
 	return messagesDomain, nil
 }
 
+func (ms *MessageStorage) DeletetAllByAuthorId(authorId int32) error {
+	stmt := table.Messages.
+		DELETE().
+		WHERE(table.Messages.AuthorId.EQ(postgres.Int32(authorId)))
+
+	_, err := stmt.Exec(ms.database)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func mapModelToDomainMessage(message model.Messages) domain.Message {
+	var content string
+	if message.Content != nil {
+		content = *message.Content
+	}
+
 	return domain.Message{
-		Id:      message.ID,
-		Content: *message.Content,
-		AuthorId:  *message.AuthorId,
+		Id:       message.ID,
+		Content:  content,
+		AuthorId: message.AuthorId,
 	}
 }

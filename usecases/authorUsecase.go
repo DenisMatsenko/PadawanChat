@@ -3,10 +3,11 @@ package usecases
 import (
 	"Chat/domain"
 	"Chat/ports"
+	"fmt"
 )
 
 type AuthorUsecase struct {
-	authorStorage *ports.AuthorStorage
+	authorStorage  *ports.AuthorStorage
 	messageStorage *ports.MessageStorage
 }
 
@@ -23,12 +24,7 @@ func (a AuthorUsecase) Insert(author domain.Author) error {
 }
 
 func (a AuthorUsecase) Update(author domain.Author) error {
-	err := a.authorStorage.Exist(author.Id)
-	if err != nil {
-		return err
-	}
-
-	err = a.authorStorage.Update(author)
+	err := a.authorStorage.Update(author)
 	if err != nil {
 		return err
 	}
@@ -36,22 +32,19 @@ func (a AuthorUsecase) Update(author domain.Author) error {
 }
 
 func (a AuthorUsecase) Delete(authorId int32) error {
-	err := a.authorStorage.Exist(authorId)
+	_, err := a.authorStorage.Exist(authorId)
 	if err != nil {
 		return err
 	}
 
-	messages, err := a.messageStorage.GetAllByAuthorId(authorId)
+	fmt.Println("Author exist")
+
+	err = a.messageStorage.DeletetAllByAuthorId(authorId)
 	if err != nil {
 		return err
 	}
 
-	for _, message := range messages {
-		err = a.messageStorage.Delete(int(message.Id))
-		if err != nil {
-			return err
-		}
-	}
+	fmt.Println("Messages deleted")
 
 	err = a.authorStorage.Delete(authorId)
 	if err != nil {
@@ -61,7 +54,7 @@ func (a AuthorUsecase) Delete(authorId int32) error {
 }
 
 func (a AuthorUsecase) GetAllMessages(authorId int32) ([]domain.Message, error) {
-	err := a.authorStorage.Exist(authorId)
+	_, err := a.authorStorage.Exist(authorId)
 	if err != nil {
 		return nil, err
 	}

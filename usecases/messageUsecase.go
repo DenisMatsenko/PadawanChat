@@ -16,7 +16,7 @@ func NewMessageUsecase(ms *ports.MessageStorage, as *ports.AuthorStorage) *Messa
 
 func (msgu MessageUsecase) Insert(message domain.Message) error {
 
-	err := msgu.authorStorage.Exist(message.AuthorId)
+	_, err := msgu.authorStorage.Exist(message.AuthorId)
 	if err != nil {
 		return err
 	}

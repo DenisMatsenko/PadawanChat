@@ -11,8 +11,8 @@ import (
 	"net/http"
 	"os"
 )
-//go:generate go run github.com/go-jet/jet/v2/cmd/jet -dsn=postgres://postgres:Dm2016dM@localhost:5432/PadawanChat?sslmode=disable -path=./internal/ports/database/gen
 
+//go:generate go run github.com/go-jet/jet/v2/cmd/jet -dsn=postgres://postgres:Dm2016dM@localhost:5432/PadawanChat?sslmode=disable -path=./internal/ports/database/gen
 
 func main() {
 	dbConnection, err := sql.Open("postgres", "host=localhost port=5432 user=postgres password=Dm2016dM dbname=PadawanChat sslmode=disable")
@@ -30,12 +30,12 @@ func main() {
 
 	mux := mux.NewRouter()
 	mux.HandleFunc("/message/create", messageHandler.MessageCreate).Methods("POST")
-	mux.HandleFunc("/message/delete/{id}", messageHandler.MessageDelete).Methods("DELETE")
+	mux.HandleFunc("/message/{id}/delete", messageHandler.MessageDelete).Methods("DELETE")
 	mux.HandleFunc("/message/get/all", messageHandler.MessageGetAll).Methods("GET")
 	mux.HandleFunc("/author/create", authorHandler.AuthorCreate).Methods("POST")
-	mux.HandleFunc("/author/update", authorHandler.AuthorUpdate).Methods("PUT")
+	mux.HandleFunc("/author/{id}/update", authorHandler.AuthorUpdate).Methods("PUT")
 	mux.HandleFunc("/author/{id}/delete", authorHandler.AuthorDelete).Methods("DELETE")
-	mux.HandleFunc("/author/{id}/messages/get/all", authorHandler.AuthorGetAllMessages).Methods("GET")
+	mux.HandleFunc("/author/{id}/messages", authorHandler.AuthorGetAllMessages).Methods("GET")
 
 	fmt.Println("Server running on port 8080")
 	http.ListenAndServe("0.0.0.0:8080", mux)
