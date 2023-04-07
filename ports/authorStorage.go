@@ -52,6 +52,19 @@ func (as *AuthorStorage) Update(author domain.Author) error {
 	return nil
 }
 
+func (as *AuthorStorage) Delete(authorId int32) error {
+	stmt := table.Authors.
+		DELETE().
+		WHERE(table.Authors.ID.EQ(postgres.Int(int64(authorId))))
+
+	_, err := stmt.Exec(as.database)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+ 
 func (as *AuthorStorage) Exist(authorId int32) error {
 	stmt := table.Authors.SELECT(table.Authors.ID).WHERE(table.Authors.ID.EQ(postgres.Int(int64(authorId))))
 

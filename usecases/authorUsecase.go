@@ -35,6 +35,31 @@ func (a AuthorUsecase) Update(author domain.Author) error {
 	return nil
 }
 
+func (a AuthorUsecase) Delete(authorId int32) error {
+	err := a.authorStorage.Exist(authorId)
+	if err != nil {
+		return err
+	}
+
+	messages, err := a.messageStorage.GetAllByAuthorId(authorId)
+	if err != nil {
+		return err
+	}
+
+	for _, message := range messages {
+		err = a.messageStorage.Delete(int(message.Id))
+		if err != nil {
+			return err
+		}
+	}
+
+	err = a.authorStorage.Delete(authorId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (a AuthorUsecase) GetAllMessages(authorId int32) ([]domain.Message, error) {
 	err := a.authorStorage.Exist(authorId)
 	if err != nil {

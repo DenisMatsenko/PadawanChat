@@ -4,6 +4,7 @@ import (
 	"Chat/domain"
 	"Chat/usecases"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -35,7 +36,21 @@ func (h AuthorHandler) AuthorCreate(rw http.ResponseWriter, r *http.Request)  {
 }
 
 func (h AuthorHandler) AuthorDelete(rw http.ResponseWriter, r *http.Request) {
+	fmt.Print("AuthorDelete")
+	vars := mux.Vars(r)
+	deleteAuthorId, err := strconv.ParseInt(vars["id"], 10, 32)
+	if err != nil {
+		sendError(rw, err)
+		return
+	}
 
+	err = h.authorUsecase.Delete(int32(deleteAuthorId))
+	if err != nil {
+		sendError(rw, err)
+		return
+	}
+
+	rw.WriteHeader(http.StatusNoContent)
 }
 
 func (h AuthorHandler) AuthorUpdate(rw http.ResponseWriter, r *http.Request) {
