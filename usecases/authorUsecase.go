@@ -3,7 +3,6 @@ package usecases
 import (
 	"Chat/domain"
 	"Chat/ports"
-	"fmt"
 )
 
 type AuthorUsecase struct {
@@ -37,14 +36,10 @@ func (a AuthorUsecase) Delete(authorId int32) error {
 		return err
 	}
 
-	fmt.Println("Author exist")
-
 	err = a.messageStorage.DeletetAllByAuthorId(authorId)
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("Messages deleted")
 
 	err = a.authorStorage.Delete(authorId)
 	if err != nil {
