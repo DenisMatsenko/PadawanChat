@@ -2,10 +2,10 @@ package ports
 
 import (
 	"Chat/domain"
+	"Chat/internal/ports/database/gen/PadawanChat/public/model"
 	"Chat/internal/ports/database/gen/PadawanChat/public/table"
 	"database/sql"
 	"github.com/go-jet/jet/v2/postgres"
-	"github.com/go-jet/jet/v2/qrm"
 )
 
 type AuthorStorage struct {
@@ -71,18 +71,32 @@ func (as *AuthorStorage) Delete(authorId int32) error {
 	return nil
 }
 
-func (as *AuthorStorage) Exist(authorId int32) (*domain.Author, error) {
+func (as *AuthorStorage) GetByID(authorId int32) (*domain.Author, error) {
 	stmt := table.Authors.
 		SELECT(table.Authors.AllColumns).
 		WHERE(table.Authors.ID.EQ(postgres.Int(int64(authorId))))
 
-	author := domain.Author{}
-	err := stmt.Query(as.database, &author)
-	if err == qrm.ErrNoRows {
-		return nil, domain.ErrAuthorNotFound
-	} else if err != nil {
+	authorsModel := []model.Authors{}
+	err := stmt.Query(as.database, &authorsModel)
+	if err != nil {
 		return nil, err
 	}
 
-	return &author, nil
+	authorsDomain := []domain.Author{}
+	for _, authorModel := range authorsModel {
+		authorsDomain = append(authorsDomain, mapModelToDomainAuthor(authorModel))
+	}
+
+	if len(authorsDomain) == 1 {
+		return &authorsDomain[0], nil
+	} else {
+		return nil, domain.ErrAuthorNotFound
+	}
+}
+
+func mapModelToDomainAuthor(authorModel model.Authors) domain.Author {
+	return domain.Author{
+		Id:       authorModel.ID,
+		Username: authorModel.Username,
+	}
 }

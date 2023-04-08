@@ -8,6 +8,6 @@
 package model
 
 type Authors struct {
-	Username *string
+	Username string
 	ID       int32
 }

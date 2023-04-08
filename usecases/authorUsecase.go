@@ -31,7 +31,7 @@ func (a AuthorUsecase) Update(author domain.Author) error {
 }
 
 func (a AuthorUsecase) Delete(authorId int32) error {
-	_, err := a.authorStorage.Exist(authorId)
+	_, err := a.authorStorage.GetByID(authorId)
 	if err != nil {
 		return err
 	}
@@ -49,7 +49,7 @@ func (a AuthorUsecase) Delete(authorId int32) error {
 }
 
 func (a AuthorUsecase) GetAllMessages(authorId int32) ([]domain.Message, error) {
-	_, err := a.authorStorage.Exist(authorId)
+	_, err := a.authorStorage.GetByID(authorId)
 	if err != nil {
 		return nil, err
 	}
