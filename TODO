@@ -1,7 +1,0 @@
-fix jet insertModel in storages
-
-DELETE Author
-    pri delete author smazes i vsechny jeho messages
-
-author delete by id need access to messageStorage for deleting
-messages written by deleted author
