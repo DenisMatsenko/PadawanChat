@@ -5,10 +5,9 @@ import (
 	"Chat/usecases"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
-
-	"github.com/gorilla/mux"
 )
 
 type MessageHandler struct {
@@ -19,7 +18,6 @@ func NewMessageHadler(messageUsecase *usecases.MessageUsecase) MessageHandler {
 	return MessageHandler{messageUsecase: messageUsecase}
 }
 
-// ! status ok after error ?
 func (h MessageHandler) MessageCreate(rw http.ResponseWriter, r *http.Request) {
 	var message domain.Message
 	err := json.NewDecoder(r.Body).Decode(&message)
@@ -62,14 +60,16 @@ func (h MessageHandler) MessageGetAll(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	rw.Header().Set("Content-Type", "application/json")
-	rw.WriteHeader(http.StatusOK)  
-	json.NewEncoder(rw).Encode(messages)                
+	rw.WriteHeader(http.StatusOK)
+	json.NewEncoder(rw).Encode(messages)
 }
 
 func sendError(rw http.ResponseWriter, err error) {
 	fmt.Println(err)
-	if err == domain.ErrMessageNotFound {
-		rw.WriteHeader(http.StatusNotFound)
+
+	customError, ok := err.(domain.CustomError)
+	if ok {
+		rw.WriteHeader(customError.StatusCode)
 	} else {
 		rw.WriteHeader(http.StatusInternalServerError)
 	}

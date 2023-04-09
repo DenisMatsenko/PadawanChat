@@ -2,10 +2,25 @@ package domain
 
 import (
 	"fmt"
+	"net/http"
 )
 
-type Error error
+type CustomError struct {
+	StatusCode int
+	Message    string
+}
+
+func (e CustomError) Error() string {
+	return fmt.Sprintf("status %d: %s", e.StatusCode, e.Message)
+}
 
 var (
-	ErrMessageNotFound Error = fmt.Errorf("not found message")
+	ErrMessageNotFound CustomError = CustomError{
+		StatusCode: http.StatusNotFound,
+		Message:    "message not found",
+	}
+	ErrAuthorNotFound CustomError = CustomError{
+		StatusCode: http.StatusNotFound,
+		Message:    "author not found",
+	}
 )

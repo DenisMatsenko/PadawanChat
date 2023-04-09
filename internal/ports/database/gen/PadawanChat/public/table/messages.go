@@ -17,9 +17,9 @@ type messagesTable struct {
 	postgres.Table
 
 	//Columns
-	ID      postgres.ColumnInteger
-	Author  postgres.ColumnString
-	Content postgres.ColumnString
+	ID       postgres.ColumnInteger
+	Content  postgres.ColumnString
+	AuthorId postgres.ColumnInteger
 
 	AllColumns     postgres.ColumnList
 	MutableColumns postgres.ColumnList
@@ -61,19 +61,19 @@ func newMessagesTable(schemaName, tableName, alias string) *MessagesTable {
 func newMessagesTableImpl(schemaName, tableName, alias string) messagesTable {
 	var (
 		IDColumn       = postgres.IntegerColumn("id")
-		AuthorColumn   = postgres.StringColumn("author")
 		ContentColumn  = postgres.StringColumn("content")
-		allColumns     = postgres.ColumnList{IDColumn, AuthorColumn, ContentColumn}
-		mutableColumns = postgres.ColumnList{IDColumn, AuthorColumn, ContentColumn}
+		AuthorIdColumn = postgres.IntegerColumn("authorId")
+		allColumns     = postgres.ColumnList{IDColumn, ContentColumn, AuthorIdColumn}
+		mutableColumns = postgres.ColumnList{IDColumn, ContentColumn, AuthorIdColumn}
 	)
 
 	return messagesTable{
 		Table: postgres.NewTable(schemaName, tableName, alias, allColumns...),
 
 		//Columns
-		ID:      IDColumn,
-		Author:  AuthorColumn,
-		Content: ContentColumn,
+		ID:       IDColumn,
+		Content:  ContentColumn,
+		AuthorId: AuthorIdColumn,
 
 		AllColumns:     allColumns,
 		MutableColumns: mutableColumns,
