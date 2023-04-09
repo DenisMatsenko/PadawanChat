@@ -82,16 +82,16 @@ func (as *AuthorStorage) GetByID(authorId int32) (*domain.Author, error) {
 		return nil, err
 	}
 
+	if len(authorsModel) != 1 {
+		return nil, domain.ErrAuthorNotFound
+	}
+
 	authorsDomain := []domain.Author{}
 	for _, authorModel := range authorsModel {
 		authorsDomain = append(authorsDomain, mapModelToDomainAuthor(authorModel))
 	}
 
-	if len(authorsDomain) == 1 {
-		return &authorsDomain[0], nil
-	} else {
-		return nil, domain.ErrAuthorNotFound
-	}
+	return &authorsDomain[0], nil
 }
 
 func mapModelToDomainAuthor(authorModel model.Authors) domain.Author {
