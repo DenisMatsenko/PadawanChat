@@ -17,13 +17,16 @@ func NewMessageStorage(dbConnect *sql.DB) *MessageStorage {
 }
 
 func (ms *MessageStorage) Insert(message domain.Message) error {
-	stmt := table.Messages.
-		INSERT(
-			table.Messages.Content,
-			table.Messages.AuthorId).
-		VALUES(
-			postgres.String(message.Content),
-			postgres.Int32(message.AuthorId))
+	insertModel := []model.Messages{
+		{
+			Content:  &message.Content,
+			AuthorId: message.AuthorId,
+		},
+	}
+
+	stmt := table.Messages.INSERT(
+		table.Messages.AllColumns.Except(table.Messages.ID)).
+		MODELS(insertModel)
 
 	_, err := stmt.Exec(ms.database)
 	if err != nil {

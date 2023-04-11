@@ -17,11 +17,17 @@ func NewAuthorStorage(dbConnect *sql.DB) *AuthorStorage {
 }
 
 func (as *AuthorStorage) Insert(author domain.Author) error {
-	stmt := table.Authors.
-		INSERT(
-			table.Authors.Username).
-		VALUES(
-			postgres.String(author.Username))
+
+
+	insertModels := []model.Authors{
+		{
+			Username: author.Username,
+		},
+	}
+
+	stmt := table.Authors.INSERT(
+		table.Authors.AllColumns.Except(table.Authors.ID)).
+		MODELS(insertModels)
 
 	_, err := stmt.Exec(as.database)
 	if err != nil {
